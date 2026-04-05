@@ -14,11 +14,31 @@ import streamlit as st
 
 DB = os.path.join(os.path.dirname(__file__), "marketing_attribution.db")
 
-if not os.path.exists(DB):
-    import subprocess
-    import sys
+def db_is_ready():
+    """Check DB exists AND has all expected tables populated."""
+    if not os.path.exists(DB):
+        return False
+    try:
+        import sqlite3 as _sq
+        conn = _sq.connect(DB)
+        tables = [r[0] for r in conn.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()]
+        required = ["fact_attribution","fact_touchpoints","fact_conversions",
+                    "fact_spend","fact_orders","dim_customer","dim_channel"]
+        conn.close()
+        return all(t in tables for t in required)
+    except Exception:
+        return False
+
+if not db_is_ready():
+    import subprocess, sys
+    if os.path.exists(DB):
+        os.remove(DB)  # Remove partial/corrupt DB before regenerating
     gen_script = os.path.join(os.path.dirname(__file__), "generate_data.py")
-    subprocess.run([sys.executable, gen_script], check=True)
+    result = subprocess.run([sys.executable, gen_script], capture_output=True, text=True)
+    if result.returncode != 0:
+        import streamlit as st
+        st.error(f"Database generation failed:\n{result.stderr}")
+        st.stop()
 
 st.set_page_config(
     page_title="Marketing Attribution Platform",
