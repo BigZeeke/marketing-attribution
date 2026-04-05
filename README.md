@@ -27,7 +27,7 @@ The goal: demonstrate what a marketing analytics engineer actually does — not 
 
 ## Live Demo
 
-🚀 **[pricing-analytics.streamlit.app](https://pricing-analytics.streamlit.app)** *(deploy link — update on launch)*
+🚀 **[marketing-attribution.streamlit.app](https://marketing-attribution.streamlit.app)**
 
 ---
 
