@@ -1,0 +1,5 @@
+marketing_attribution.db
+__pycache__/
+.env
+*.pyc
+.DS_Store
