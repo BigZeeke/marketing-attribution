@@ -1,3 +1,4 @@
+import os
 """
 generate_data_v2.py — Realistic messy B2C marketing data
 Intentional problems baked in:
@@ -15,7 +16,7 @@ from faker import Faker
 fake = Faker()
 random.seed(42)
 
-DB_PATH = "marketing_attribution.db"
+DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "marketing_attribution.db")
 START_DATE = date(2023, 1, 1)
 END_DATE   = date(2024, 12, 31)
 N_CUSTOMERS = 5000
@@ -366,7 +367,8 @@ def main():
     if os.path.exists(DB_PATH): os.remove(DB_PATH)
     print("Building realistic messy marketing attribution database...")
     conn=sqlite3.connect(DB_PATH); c=conn.cursor()
-    c.executescript(open("schema.sql").read())
+    schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "schema.sql")
+    c.executescript(open(schema_path).read())
 
     c.executemany("INSERT INTO dim_channel VALUES (?,?,?,?,?)",
                   [(ch[0],ch[1],ch[2],ch[3],ch[4]) for ch in CHANNELS])
